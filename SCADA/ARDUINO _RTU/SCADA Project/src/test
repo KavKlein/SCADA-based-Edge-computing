@@ -1,0 +1,40 @@
+#include "DHT.h"
+
+// Define the digital pin the DHT22 data pin is connected to
+#define DHTPIN 7
+
+// Define the DHT sensor type
+#define DHTTYPE DHT22
+
+// Initialize the DHT sensor
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600); // Start serial communication
+  Serial.println("DHT22 Sensor Test!");
+
+  dht.begin(); // Initialize the DHT sensor
+}
+
+void loop() {
+  // Wait a few seconds between measurements
+  delay(2000);
+
+  // Read humidity and temperature
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  // Check if any reads failed
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
+  }
+
+  // Print the results to the Serial Monitor
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.print(" %\t");
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+}
