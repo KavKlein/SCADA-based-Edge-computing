@@ -86,7 +86,7 @@ DHT dht(DHT_PIN, DHT11);
 //timing variables required for processing
 unsigned long lastSensorRead = 0;
 unsigned long lastCommCheck = 0;
-const unsigned long SENSOR_INTERVAL = 1000;
+const unsigned long SENSOR_INTERVAL = 2000;
 const unsigned long COMM_TIMEOUT = 5000;
 const unsigned long LED_UPDATE_INTERVAL = 100;
 // Variables for detection
@@ -160,7 +160,7 @@ void setup() {
   pinMode(LED_RED, OUTPUT);
   
   // Default state
-  digitalWrite(RELAY1_PIN, HIGH);
+  digitalWrite(RELAY1_PIN, LOW);
   digitalWrite(RELAY2_PIN, LOW);
   digitalWrite(LED_GREEN, HIGH); // System ready
   digitalWrite(LED_BLUE, LOW);
@@ -269,11 +269,11 @@ void setupModbusTCP() {
   mb.begin();
   
   // Register Modbus areas
-  mb.addIreg(0, 0, 7);   // Input Registers (sensors)
-  mb.addHreg(0, 0, 7);   // Holding Registers (control)
+  mb.addIreg(0, 0, 20);   // Input Registers (sensors)
+  mb.addHreg(0, 0, 20);   // Holding Registers (control)
 
   // Initialize all registers to zero
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 20; i++) {
     mb.Ireg(i, 0);
     mb.Hreg(i, 0);
   }
@@ -308,7 +308,6 @@ void readSensors() {
     inputRegisters[IR_HUMIDITY] = (uint16_t)(humidity * 10);
 
     Serial.printf("Stored: IR_TEMP=%d, IR_HUMIDITY=%d\n", 
-                  inputRegisters[IR_TEMP], inputRegisters[IR_HUMIDITY]);Serial.printf("Stored: IR_TEMP=%d, IR_HUMIDITY=%d\n", 
                   inputRegisters[IR_TEMP], inputRegisters[IR_HUMIDITY]);
   }
 
@@ -356,7 +355,7 @@ void readAnalogInputs() {
 
 void updateModbusInputs() {
   // Update Input Registers from local storage
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 20; i++) {
     mb.Ireg(i, inputRegisters[i]);
   }
 
@@ -378,7 +377,7 @@ void updateModbusInputs() {
 
   //DEBUG CODE:
   static unsigned long lastLog = 0;
-  if (millis() - lastLog >= 10000) {  // Every 10 seconds
+  if (millis() - lastLog >= 2000) {  // Every 10 seconds
     lastLog = millis();
       Serial.println("\n=== MODBUS REGISTERS ===");
       Serial.println("\n=== INPUT REGISTERS ===");
@@ -641,7 +640,7 @@ void updateModuleStatus() {
   
   // Debug output every 5 seconds
   static unsigned long lastDebug = 0;
-  if (millis() - lastDebug >= 5000) {
+  if (millis() - lastDebug >= 2000) {
     lastDebug = millis();
     Serial.println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     Serial.println(" I/O Module Status Report");
@@ -649,8 +648,8 @@ void updateModuleStatus() {
     Serial.printf("Temperature:  %.1f°C\n", inputRegisters[IR_TEMP] / 10.0);
     Serial.printf("Humidity:     %.1f%%\n", inputRegisters[IR_HUMIDITY] / 10.0);
     Serial.printf("Oil Level:    %d cm\n", inputRegisters[IR_OIL_LEVEL]);
-    Serial.printf("Relay 1:      %s\n", digitalRead(RELAY1_PIN) ? "ON" : "OFF");
-    Serial.printf("Relay 2:      %s\n", digitalRead(RELAY2_PIN) ? "ON" : "OFF");
+    Serial.printf("Relay 1:      %s\n", digitalRead(RELAY1_PIN));
+    Serial.printf("Relay 2:      %s\n", digitalRead(RELAY2_PIN));
     Serial.printf("Mode:         %s\n", mode == MODE_AUTO ? "AUTO" : mode == MODE_MANUAL ? "MANUAL" : "TEST");
     Serial.printf("WiFi Signal:  %d dBm\n", WiFi.RSSI());
     Serial.printf("Module Status: 0x%04X\n", moduleStatus);
