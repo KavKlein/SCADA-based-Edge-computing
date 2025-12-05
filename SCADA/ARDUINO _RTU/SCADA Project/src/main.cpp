@@ -648,11 +648,23 @@ void updateModuleStatus() {
     Serial.printf("Temperature:  %.1f°C\n", inputRegisters[IR_TEMP] / 10.0);
     Serial.printf("Humidity:     %.1f%%\n", inputRegisters[IR_HUMIDITY] / 10.0);
     Serial.printf("Oil Level:    %d cm\n", inputRegisters[IR_OIL_LEVEL]);
-    Serial.printf("Relay 1:      %s\n", digitalRead(RELAY1_PIN));
-    Serial.printf("Relay 2:      %s\n", digitalRead(RELAY2_PIN));
-    Serial.printf("Mode:         %s\n", mode == MODE_AUTO ? "AUTO" : mode == MODE_MANUAL ? "MANUAL" : "TEST");
+    Serial.print("Relay 1: ");
+    Serial.println((holdingRegisters[HR_DO_CMD] & 0x01) ? HIGH : LOW);
+    Serial.print("Relay 2: ");
+    Serial.println((holdingRegisters[HR_DO_CMD] & 0x0) ? HIGH : LOW);
+    Serial.print("Mode: ");
+    Serial.println(mode == MODE_AUTO ? "AUTO" : mode == MODE_MANUAL ? "MANUAL" : "TEST");
     Serial.printf("WiFi Signal:  %d dBm\n", WiFi.RSSI());
-    Serial.printf("Module Status: 0x%04X\n", moduleStatus);
+    Serial.print("Module Status: ");
+    Serial.println(
+      (moduleStatus == STATUS_OK) ? "STATUS_OK" :
+      (moduleStatus == STATUS_SENSOR_FAULT) ? "STATUS_SENSOR_FAULT" :
+      (moduleStatus == STATUS_COMM_ERROR) ? "STATUS_COMM_ERROR" :
+      (moduleStatus == STATUS_ALARM_ACTIVE) ? "STATUS_ALARM_ACTIVE" :
+      (moduleStatus == STATUS_MANUAL_MODE) ? "STATUS_MANUAL_MODE" :
+      (moduleStatus == STATUS_TEST_MODE) ? "STATUS_TEST_MODE" :
+      "UNKNOWN_STATUS"
+    );
     Serial.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
   }
 
