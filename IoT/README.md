@@ -1,2 +1,0 @@
-# SCADA based Edge computing
-
