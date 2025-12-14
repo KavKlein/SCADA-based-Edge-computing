@@ -23,6 +23,7 @@ The system enables **real-time reading and writing** of sensor data and relay/LE
 7. **Relay/LED control** is performed by updating the correct bits in the uint16 register.
 
 ---
+Relavant documents are available in SCADA/DOCS
 
 
 
